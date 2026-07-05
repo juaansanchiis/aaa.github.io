@@ -21,6 +21,7 @@
       font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
       padding: 16px;
       overflow-x: hidden;
+      perspective: 1200px;
     }
 
     /* Contenedor principal */
@@ -32,6 +33,7 @@
       width: 100%;
       position: relative;
       z-index: 1;
+      perspective: 1200px;
     }
 
     /* === SOBRE === */
@@ -45,7 +47,7 @@
       cursor: pointer;
       transition: transform 0.3s ease;
       transform-style: preserve-3d;
-      perspective: 600px;
+      perspective: 1000px;
     }
 
     .envelope:hover {
@@ -133,9 +135,9 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       padding: 30px 20px;
       z-index: 100;
-      transform: translate(-50%, -50%) scale(0.3) rotateX(90deg);
+      transform: translate(-50%, -50%) scale(0.3) rotateX(90deg) translateZ(-500px);
       transform-origin: center;
-      transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease, box-shadow 0.5s ease;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease, box-shadow 0.5s ease;
       opacity: 0;
       display: flex;
       flex-direction: column;
@@ -145,6 +147,8 @@
       pointer-events: none;
       border: 1px solid #f0e8de;
       overflow-y: auto;
+      transform-style: preserve-3d;
+      perspective: 1000px;
     }
 
     .card-content {
@@ -185,10 +189,10 @@
     }
 
     .envelope.open .card {
-      transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+      transform: translate(-50%, -50%) scale(1) rotateX(0deg) translateZ(0);
       opacity: 1;
       pointer-events: auto;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
 
     .envelope.open {
