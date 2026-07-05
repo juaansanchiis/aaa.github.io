@@ -1,252 +1,336 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Demo — Jiju Super Épico</title>
-<style>
-  :root{
-    --bg1:#0f172a;
-    --bg2:#0b1020;
-    --accent1:#00e5ff;
-    --accent2:#b300ff;
-    --glass: rgba(255,255,255,0.04);
-  }
-  html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-  body{
-    background: radial-gradient(1200px 600px at 10% 10%, rgba(179,0,255,0.08), transparent 10%),
-                radial-gradient(1000px 500px at 90% 90%, rgba(0,229,255,0.06), transparent 10%),
-                linear-gradient(180deg,var(--bg1),var(--bg2));
-    color: #e6eef8;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre de felicitación</title>
+  <style>
+    /* Reset y fondo */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  /* particle canvas */
-  #canvas{ position:fixed; inset:0; z-index:0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(145deg, #f7e9d7 0%, #e8d5c4 100%);
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 16px;
+    }
 
-  .card{
-    position:relative;
-    z-index:2;
-    width:min(980px,92vw);
-    padding:36px;
-    border-radius:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 10px 40px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
-    backdrop-filter: blur(6px) saturate(120%);
-    display:grid;
-    grid-template-columns: 1fr 340px;
-    gap:22px;
-    align-items:center;
-  }
+    /* Contenedor principal */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
 
-  .left{
-    padding:8px 12px;
-  }
+    /* === SOBRE === */
+    .envelope {
+      position: relative;
+      width: 320px;
+      height: 200px;
+      background: #fcf6ec;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+      perspective: 600px;
+    }
 
-  .logo{
-    display:flex;gap:12px;align-items:center;margin-bottom:8px;
-  }
-  .sig{
-    width:64px;height:64px;border-radius:12px;
-    background:linear-gradient(135deg,var(--accent2),var(--accent1));
-    display:flex;align-items:center;justify-content:center;
-    font-weight:700;color:#021; font-size:22px; box-shadow:0 8px 30px rgba(11,12,20,0.6);
-  }
+    .envelope:hover {
+      transform: scale(1.02);
+    }
 
-  h1{
-    font-size:48px;
-    line-height:0.95;
-    margin:0;
-    letter-spacing:-1px;
-    display:flex;align-items:center;gap:14px;
-  }
+    /* Solapa (triángulo superior) */
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fcf6ec;
+      clip-path: polygon(0 0, 50% 60%, 100% 0);
+      border-radius: 8px 8px 0 0;
+      transform-origin: top center;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.04);
+      z-index: 5;
+      pointer-events: none;
+      /* borde simulado con pseudo */
+    }
 
-  /* glitch effect */
-  .glitch{
-    position:relative;
-    display:inline-block;
-    color:white;
-    font-weight:800;
-  }
-  .glitch::before,
-  .glitch::after{
-    content: attr(data-text);
-    position:absolute; left:0; top:0; width:100%;
-    clip: rect(0,9999px,0,0);
-  }
-  .glitch::before{
-    animation: g1 2.5s infinite linear;
-    transform:translateX(-2px);
-    color: var(--accent1);
-    opacity:0.9;
-  }
-  .glitch::after{
-    animation: g2 3s infinite linear;
-    transform:translateX(2px);
-    color: var(--accent2);
-    opacity:0.85;
-  }
-  @keyframes g1{
-    0%{clip:rect(0,9999px,0,0); transform:translate(0);}
-    10%{clip:rect(10px,9999px,60px,0); transform:translate(-2px,-1px);}
-    20%{clip:rect(0,9999px,0,0); transform:translate(0);}
-    30%{clip:rect(40px,9999px,80px,0); transform:translate(-1px,1px);}
-    100%{clip:rect(0,9999px,0,0);}
-  }
-  @keyframes g2{
-    0%{clip:rect(0,9999px,0,0); transform:translate(0);}
-    15%{clip:rect(20px,9999px,60px,0); transform:translate(1px,-1px);}
-    35%{clip:rect(0,9999px,0,0); transform:translate(0);}
-    60%{clip:rect(50px,9999px,95px,0); transform:translate(2px,2px);}
-    100%{clip:rect(0,9999px,0,0);}
-  }
+    .flap::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #faf2e6 0%, #f0e4d4 100%);
+      clip-path: polygon(0 0, 50% 60%, 100% 0);
+      border-radius: 8px 8px 0 0;
+      opacity: 0.6;
+    }
 
-  p.lead{margin:10px 0 0;color:rgba(230,238,248,0.85);font-size:16px}
+    /* Línea de "cierre" (simula el borde de la solapa) */
+    .flap-line {
+      position: absolute;
+      top: 58%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #dccfc0;
+      opacity: 0.4;
+      z-index: 4;
+      pointer-events: none;
+    }
 
-  .meta{
-    display:flex;flex-direction:column;gap:12px;
-    align-items:flex-end;padding-right:6px;
-  }
-  .meta .badge{
-    padding:8px 14px;border-radius:999px;background:var(--glass);font-weight:600;color:#dff;
-    border:1px solid rgba(255,255,255,0.03);
-    backdrop-filter: blur(4px);
-  }
+    /* Cuerpo del sobre (parte inferior) */
+    .envelope-body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 42%;
+      background: #fcf6ec;
+      border-radius: 0 0 8px 8px;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.04);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  .actions{display:flex;gap:10px}
-  .btn{
-    border:0;padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer;
-    background:linear-gradient(90deg,var(--accent1),var(--accent2));
-    color:#021; box-shadow:0 6px 18px rgba(11,12,20,0.5);
-  }
-  .btn.ghost{
-    background:transparent;color:#dff;border:1px solid rgba(255,255,255,0.06);box-shadow:none;
-  }
+    /* Cinta decorativa (opcional) */
+    .envelope-body::before {
+      content: '✧';
+      font-size: 24px;
+      color: #c9b09b;
+      letter-spacing: 12px;
+      opacity: 0.5;
+    }
 
-  /* footer small */
-  .foot{margin-top:12px;font-size:12px;color:rgba(230,238,248,0.6)}
+    /* === TARJETA (dentro del sobre) === */
+    .card {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      width: calc(100% - 40px);
+      height: calc(100% - 30px);
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      padding: 20px 16px;
+      z-index: 1;
+      transform: translateY(110%) rotateX(10deg) scale(0.9);
+      transform-origin: bottom center;
+      transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+      backface-visibility: hidden;
+      border: 1px solid #f0e8de;
+    }
 
-  /* responsive */
-  @media (max-width:820px){
-    .card{grid-template-columns:1fr; padding:22px;}
-    h1{font-size:34px}
-    .meta{align-items:flex-start}
-  }
+    .card-content {
+      max-width: 100%;
+    }
 
-</style>
+    .card h2 {
+      font-size: 1.8rem;
+      color: #3d2c1f;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .card .emoji-big {
+      font-size: 3.2rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 1rem;
+      color: #5a4a3a;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .card .firma {
+      margin-top: 12px;
+      font-style: italic;
+      color: #a08472;
+      font-size: 0.9rem;
+    }
+
+    /* === ESTADO ABIERTO === */
+    .envelope.open .flap {
+      transform: rotateX(-180deg);
+    }
+
+    .envelope.open .card {
+      transform: translateY(0) rotateX(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .envelope.open {
+      transform: scale(1);
+    }
+
+    /* Texto indicador */
+    .hint {
+      color: #5a4a3a;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 8px 20px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: opacity 0.4s ease;
+      user-select: none;
+    }
+
+    .envelope.open~.hint {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Botón para reiniciar (opcional) */
+    .reset-btn {
+      background: #dccfc0;
+      border: none;
+      color: #3d2c1f;
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-top: 4px;
+    }
+
+    .reset-btn:hover {
+      background: #c9b9a8;
+      transform: scale(1.03);
+    }
+
+    .reset-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Ajustes para móvil */
+    @media (max-width: 450px) {
+      .envelope {
+        width: 280px;
+        height: 180px;
+      }
+      .card h2 {
+        font-size: 1.5rem;
+      }
+      .card .emoji-big {
+        font-size: 2.6rem;
+      }
+      .card p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<canvas id="canvas"></canvas>
 
-<div class="card" role="main" aria-label="Demo épico de jiju">
-  <div class="left">
-    <div class="logo">
-      <div class="sig">Ji</div>
-      <div>
-        <div style="font-size:13px;color:rgba(230,238,248,0.6);font-weight:600">DEMO • PORTFOLIO</div>
-        <div style="font-size:12px;color:rgba(230,238,248,0.45)">Efecto visual — Editable</div>
+  <div class="container">
+
+    <div class="envelope" id="envelope">
+      <!-- Solapa -->
+      <div class="flap"></div>
+      <div class="flap-line"></div>
+
+      <!-- Cuerpo del sobre (solo visual) -->
+      <div class="envelope-body"></div>
+
+      <!-- Tarjeta interior -->
+      <div class="card" id="card">
+        <div class="card-content">
+          <span class="emoji-big">🎉</span>
+          <h2>¡Felicidades Jesús!</h2>
+        </div>
       </div>
     </div>
 
-    <h1>
-      <span class="glitch" data-text="Demo by jiju — Super Epic">Demo by jiju — Super Epic</span>
-    </h1>
+    <div class="hint" id="hint">👇 Haz clic en el sobre para abrirlo</div>
 
-    <p class="lead">Una cabecera llamativa y animada para usar en tu web personal o en capturas. Personalízala, cambia colores o texto — y úsala sólo en entornos legales.</p>
-
-    <div class="foot">Tip: pulsa <strong>Copy</strong> para copiar el texto y pegarlo donde quieras.</div>
+    <button class="reset-btn" id="resetBtn">Cerrar sobre</button>
   </div>
 
-  <aside class="meta">
-    <div class="badge" id="status">Estado: listo</div>
+  <script>
+    (function() {
+      const envelope = document.getElementById('envelope');
+      const resetBtn = document.getElementById('resetBtn');
+      const hint = document.getElementById('hint');
 
-    <div class="actions">
-      <button class="btn" id="copy">Copiar</button>
-      <button class="btn ghost" id="download">Descargar SVG</button>
-    </div>
+      // Abrir / cerrar con clic en el sobre
+      envelope.addEventListener('click', function(e) {
+        // Evitar que el clic en la tarjeta (cuando está abierta) cierre el sobre
+        // pero como la tarjeta tiene pointer-events: auto cuando está abierta,
+        // podemos comprobar si el clic fue directamente en la tarjeta y no propagar.
+        // Para simplificar, permitimos que el clic en la tarjeta también cierre/abra
+        // pero eso puede ser confuso. Mejor: si el sobre está abierto y click en tarjeta,
+        // no hacer nada (o cerrar). Decidimos: cualquier clic en el sobre toggle.
+        // Pero para evitar que la tarjeta "robe" el clic, usamos event.target.
+        // Sin embargo, la tarjeta es parte del sobre, así que toggle.
+        toggleEnvelope();
+      });
 
-    <div style="font-size:12px;color:rgba(230,238,248,0.55);margin-top:6px">Hecho con ❤️ — Personaliza libremente</div>
-  </aside>
-</div>
+      // Botón reset (cierra)
+      resetBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // evitar que el clic en botón también dispare el toggle del sobre
+        if (envelope.classList.contains('open')) {
+          envelope.classList.remove('open');
+          hint.style.opacity = '1';
+          hint.style.pointerEvents = 'auto';
+        }
+      });
 
-<script>
-/* simple particle background */
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let w=canvas.width = innerWidth;
-let h=canvas.height = innerHeight;
-const particles = [];
-const count = Math.floor(Math.min(120, innerWidth/8));
-for(let i=0;i<count;i++){
-  particles.push({
-    x: Math.random()*w,
-    y: Math.random()*h,
-    r: Math.random()*1.6 + 0.4,
-    vx: (Math.random()-0.5)*0.3,
-    vy: (Math.random()-0.5)*0.3,
-    hue: Math.random()*360
-  });
-}
-function tick(){
-  ctx.clearRect(0,0,w,h);
-  for(const p of particles){
-    p.x += p.vx;
-    p.y += p.vy;
-    if(p.x < -10) p.x = w+10;
-    if(p.x > w+10) p.x = -10;
-    if(p.y < -10) p.y = h+10;
-    if(p.y > h+10) p.y = -10;
-    ctx.beginPath();
-    ctx.fillStyle = `hsla(${p.hue},80%,65%,${0.06 + p.r*0.12})`;
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-  }
-  requestAnimationFrame(tick);
-}
-tick();
-addEventListener('resize',()=>{
-  w=canvas.width=innerWidth; h=canvas.height=innerHeight;
-});
+      function toggleEnvelope() {
+        const isOpen = envelope.classList.contains('open');
+        if (isOpen) {
+          envelope.classList.remove('open');
+          hint.style.opacity = '1';
+          hint.style.pointerEvents = 'auto';
+        } else {
+          envelope.classList.add('open');
+          hint.style.opacity = '0';
+          hint.style.pointerEvents = 'none';
+        }
+      }
 
-/* copy text */
-document.getElementById('copy').addEventListener('click', async ()=>{
-  const txt = document.querySelector('.glitch').getAttribute('data-text') || 'Demo by jiju — Super Epic';
-  try{
-    await navigator.clipboard.writeText(txt);
-    const s = document.getElementById('status');
-    s.textContent = 'Copiado al portapapeles ✅';
-    setTimeout(()=>s.textContent = 'Estado: listo', 1600);
-  }catch(e){
-    alert('No se pudo copiar: ' + e);
-  }
-});
+      // Al cargar, aseguramos estado inicial
+      window.addEventListener('load', function() {
+        // Si está abierto por defecto? No, cerrado.
+        envelope.classList.remove('open');
+        hint.style.opacity = '1';
+        hint.style.pointerEvents = 'auto';
+      });
 
-/* download small SVG snapshot (text only) */
-document.getElementById('download').addEventListener('click', ()=>{
-  const text = document.querySelector('.glitch').getAttribute('data-text');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300">
-    <defs>
-      <linearGradient id="g" x1="0" x2="1">
-        <stop offset="0" stop-color="#00e5ff"/>
-        <stop offset="1" stop-color="#b300ff"/>
-      </linearGradient>
-    </defs>
-    <rect width="100%" height="100%" fill="#071229"/>
-    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, Arial" font-size="48" font-weight="800" fill="url(#g)">${escapeHtml(text)}</text>
-  </svg>`;
-  const blob = new Blob([svg], {type:'image/svg+xml'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'jiju-demo.svg'; document.body.appendChild(a); a.click();
-  a.remove(); URL.revokeObjectURL(url);
-});
+      // Pequeño detalle: si el usuario hace clic en la tarjeta, no cerrar (opcional)
+      // Pero para una mejor UX, dejamos que el clic en cualquier parte del sobre toggle.
+      // Si queremos que la tarjeta no cierre al hacer clic dentro, podemos agregar:
+      // pero lo dejamos así porque es simple y funcional.
+    })();
+  </script>
 
-function escapeHtml(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-</script>
 </body>
 </html>
