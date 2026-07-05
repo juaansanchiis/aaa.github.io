@@ -20,6 +20,7 @@
       background: linear-gradient(145deg, #f7e9d7 0%, #e8d5c4 100%);
       font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
       padding: 16px;
+      overflow-x: hidden;
     }
 
     /* Contenedor principal */
@@ -28,6 +29,9 @@
       flex-direction: column;
       align-items: center;
       gap: 30px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
     }
 
     /* === SOBRE === */
@@ -119,19 +123,19 @@
 
     /* === TARJETA (dentro del sobre) === */
     .card {
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      width: calc(100% - 40px);
-      height: calc(100% - 30px);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 320px;
+      max-height: 90vh;
       background: #ffffff;
       border-radius: 6px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      padding: 20px 16px;
-      z-index: 1;
-      transform: translateY(110%) rotateX(10deg) scale(0.9);
-      transform-origin: bottom center;
-      transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      padding: 30px 20px;
+      z-index: 100;
+      transform: translate(-50%, -50%) scale(0.3) rotateX(90deg);
+      transform-origin: center;
+      transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease, box-shadow 0.5s ease;
       opacity: 0;
       display: flex;
       flex-direction: column;
@@ -139,8 +143,8 @@
       justify-content: center;
       text-align: center;
       pointer-events: none;
-      backface-visibility: hidden;
       border: 1px solid #f0e8de;
+      overflow-y: auto;
     }
 
     .card-content {
@@ -181,9 +185,10 @@
     }
 
     .envelope.open .card {
-      transform: translateY(0) rotateX(0) scale(1);
+      transform: translate(-50%, -50%) scale(1) rotateX(0deg);
       opacity: 1;
       pointer-events: auto;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
     }
 
     .envelope.open {
@@ -201,6 +206,8 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       transition: opacity 0.4s ease;
       user-select: none;
+      position: relative;
+      z-index: 2;
     }
 
     .envelope.open~.hint {
@@ -220,6 +227,8 @@
       transition: background 0.2s, transform 0.2s;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       margin-top: 4px;
+      position: relative;
+      z-index: 2;
     }
 
     .reset-btn:hover {
@@ -236,6 +245,11 @@
       .envelope {
         width: 280px;
         height: 180px;
+      }
+      .card {
+        width: 280px;
+        max-height: 85vh;
+        padding: 25px 15px;
       }
       .card h2 {
         font-size: 1.5rem;
@@ -283,21 +297,25 @@
 
       // Abrir / cerrar con clic en el sobre
       envelope.addEventListener('click', function(e) {
-        // Evitar que el clic en la tarjeta (cuando está abierta) cierre el sobre
-        // pero como la tarjeta tiene pointer-events: auto cuando está abierta,
-        // podemos comprobar si el clic fue directamente en la tarjeta y no propagar.
-        // Para simplificar, permitimos que el clic en la tarjeta también cierre/abra
-        // pero eso puede ser confuso. Mejor: si el sobre está abierto y click en tarjeta,
-        // no hacer nada (o cerrar). Decidimos: cualquier clic en el sobre toggle.
-        // Pero para evitar que la tarjeta "robe" el clic, usamos event.target.
-        // Sin embargo, la tarjeta es parte del sobre, así que toggle.
         toggleEnvelope();
       });
 
       // Botón reset (cierra)
       resetBtn.addEventListener('click', function(e) {
-        e.stopPropagation(); // evitar que el clic en botón también dispare el toggle del sobre
+        e.stopPropagation();
         if (envelope.classList.contains('open')) {
+          envelope.classList.remove('open');
+          hint.style.opacity = '1';
+          hint.style.pointerEvents = 'auto';
+        }
+      });
+
+      // Cerrar al hacer clic fuera de la tarjeta
+      document.addEventListener('click', function(e) {
+        if (envelope.classList.contains('open') && 
+            !envelope.contains(e.target) && 
+            !resetBtn.contains(e.target) &&
+            !e.target.closest('.card')) {
           envelope.classList.remove('open');
           hint.style.opacity = '1';
           hint.style.pointerEvents = 'auto';
@@ -319,16 +337,10 @@
 
       // Al cargar, aseguramos estado inicial
       window.addEventListener('load', function() {
-        // Si está abierto por defecto? No, cerrado.
         envelope.classList.remove('open');
         hint.style.opacity = '1';
         hint.style.pointerEvents = 'auto';
       });
-
-      // Pequeño detalle: si el usuario hace clic en la tarjeta, no cerrar (opcional)
-      // Pero para una mejor UX, dejamos que el clic en cualquier parte del sobre toggle.
-      // Si queremos que la tarjeta no cierre al hacer clic dentro, podemos agregar:
-      // pero lo dejamos así porque es simple y funcional.
     })();
   </script>
 
